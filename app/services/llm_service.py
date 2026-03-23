@@ -13,7 +13,7 @@ if not os.environ["GROQ_API_KEY"]:
 
 def get_agent(schema: TypedDict):
     llm = ChatGroq(
-        model="openai/gpt-oss-120b",
+        model="llama-3.3-70b-versatile",
         temperature=0.0,
         max_retries=2
     )

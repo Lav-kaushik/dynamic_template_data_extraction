@@ -1,6 +1,5 @@
 from fastapi import APIRouter , HTTPException , UploadFile , File
 from fastapi.exceptions import RequestValidationError
-from io import BytesIO
 from app.services import reader 
 from pathlib import Path
 from app.hitl.graph import app_graph
@@ -18,16 +17,15 @@ async def extract(file: UploadFile = File(...)) -> InitialResponse:
             detail="No file provided"
         )
     file_name = Path(file.filename).stem.replace(" ", "_").lower()
+    
     try:
-        file_bytes = BytesIO(await file.read())
-        t0 = time.time()
-        file_content = await reader.read(file_bytes)
-        print(f"[TIMER] PDF read: {time.time() - t0:.2f}s")
-    except Exception as e:
+        file_content = await reader.read(file)
+    except RuntimeError as e:
         raise HTTPException(
             status_code=500 ,
-            detail=f"[ERROR] Failed to read PDF: {e}"
+            detail=str(e)
         )
+
     thread_id = str(uuid4())
 
     config = {
